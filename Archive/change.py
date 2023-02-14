@@ -80,7 +80,7 @@ if not os.path.exists(destination_folder):
 
 itnum = 0
 
-sg.theme('DarkBlue')   
+sg.theme('DarkGrey11')   
 
 ## set file list
 combopt = ucombopt("files")
