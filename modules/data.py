@@ -1,4 +1,5 @@
 import json
+import PySimpleGUI as sg
 
 
 def save_data(settings='none', data='none'):
@@ -32,5 +33,16 @@ def get_data(data_type):
 
 def init_data(data_type):
     if data_type == 'settings':
-        data = {'general': {'style': 'DarkGrey11'}}
+        data = {
+            'general': {'name': 'General', 'value':
+                {'style':
+                     {'name': 'Theme', 'value': 'DarkGrey11', 'type': 'dropdown', 'choices': sg.theme_list()}
+                 }
+                        },
+            'dev': {'name': 'Dev', 'value':
+                {'show':
+                     {'name': 'Are you sure you want to show all hidden settings?', 'value': False, 'type': 'checkbox'}
+                 }
+                    }
+        }
     return data
