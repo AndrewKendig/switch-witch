@@ -1,33 +1,28 @@
-from modules import menu, data
+from modules import window_manager
 import PySimpleGUI as sg
-import os
-import shutil
-from PIL import Image
+import webbrowser
+# import os
+# import shutil
+# from PIL import Image
 
-if not os.path.isfile('settings.json'):
-    data.save_data(settings=data.init_data('settings'))
 
-settings = data.get_data('settings')
-
-sg.theme(settings['general']['value']['style']['value'])
+window_manager.change_theme(sg, 'DarkGrey11')
 
 # UI
-left_column = [[sg.Text(settings['general']['value']['style']['value'])]]
-right_column = [[sg.Text('this is some text')]]
 
-layout = [[menu.get_menu()],
-          [sg.Column(left_column, element_justification='l'), sg.Column(right_column, element_justification='r')],
-          [sg.Button('Bam', size=(8, 3), font='Corbel 20 bold')]]
+window_object = window_manager.get_main_window_object(sg)
+window = window_manager.start_window(sg, window_object)
 
-window = sg.Window('Switch Witch', layout, size=(600, 500))
-
+# mainloop
 while True:
-    event, values = window.read()
+    event, values = window.read(timeout=500)
     if event == sg.WIN_CLOSED or event == 'Exit':
         break
     elif event == 'Settings':
-        updated_settings = menu.show_settings(settings)
-        if updated_settings:
-            data.save_data(updated_settings)
+        window_manager.show_not_implemented(sg, webbrowser)
+    elif event == 'Groups':
+        window_manager.show_not_implemented(sg, webbrowser)
+    elif event == 'Files':
+        window_manager.show_not_implemented(sg, webbrowser)
 
 window.close()
