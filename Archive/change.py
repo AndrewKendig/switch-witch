@@ -87,9 +87,7 @@ combopt = ucombopt("files")
 seltype = "files"
 
 ## UI
-combo_style = {
-    'size': (40, 1)
-}
+combo_style = {'size': (40, 1)}
 layout = [  [sg.Text('Pick the FIle or Folder')],
             [sg.Combo(combopt, **combo_style, key="list"), sg.Button('Switch')],
             [sg.Radio("Files", "RADIO1", default=True, key="files"), sg.Radio("Folders", "RADIO1", key="folders"), sg.Button('Refresh')] ]

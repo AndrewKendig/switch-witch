@@ -1,5 +1,5 @@
 
-def start_window(sg, window):
+def make_window(sg, window):
     title = window['title']
     layout = window['layout']
     size = window['size']
@@ -11,19 +11,15 @@ def change_theme(sg, theme):
     return True
 
 
-def get_main_window_object(sg):
+def get_main_window_object(sg, os, data_path, files_manager):
     menu_def = [
         ['&File', ['&Settings', 'E&xit']],
         ['&Manage', ['&Groups', '&Files']],
         ['&Help', ['There is no help']]
     ]
-    menu = get_menu(sg, '-MENUBAR-', 'Corbel 10', menu_def)
+    menu = make_menu(sg, '-MENUBAR-', 'Corbel 10', menu_def)
 
-    controls = make_frame(sg, [[sg.Text('This is where the controls will be')]], 'Controls', (300, 200))
-    text_preview = make_frame(sg, [[sg.Text('This is where text previews will go')]], 'Edit Texts', (300, 300))
-    image_preview = make_frame(sg, [[sg.Text('This is where image previews will go')]], 'Images', (250, 500))
-
-    layout = [[menu], [make_column(sg, [[controls], [text_preview]]), make_column(sg, [[image_preview]])]]
+    layout = [[menu], [make_column(sg, [[make_controls_section(sg, os, data_path, files_manager)], [make_text_preview_section(sg)]]), make_column(sg, [[make_image_preview_section(sg)]])]]
 
     return make_window_object(title='Switch Witch', layout=layout, size=(600, 500))
 
@@ -47,6 +43,25 @@ def show_not_implemented(sg, webbrowser):
 
 # internal functions
 
+def make_controls_section(sg, os, data_path, files_manager):
+    options = files_manager.get_groups(os, data_path)
+    group_selector = [[sg.Text('Select Group:')], [sg.Combo(options, size=(24, 1), key="-GROUP-"), sg.Button('Select Group')]]
+    version_selector = [[sg.Text('Select Version:')], [sg.Combo([], size=(40, 1), key="-VERSION-")], [sg.Button('Switch to Version', size=(36, 1))]]
+    layout = [*group_selector, *version_selector]
+    return make_frame(sg, layout, 'Controls', (300, 200))
+
+
+def make_text_preview_section(sg):
+    layout = [[sg.Text('This is where text previews will go')]]
+    return make_frame(sg, layout, 'Edit Texts', (300, 300))
+
+
+def make_image_preview_section(sg):
+    layout = [[sg.Text('This is where image previews will go')]]
+    return make_frame(sg, layout, 'Images', (250, 500))
+
+
+
 def make_window_object(title, layout, size):
     return {
         "title": title,
@@ -63,5 +78,5 @@ def make_column(sg, contents, justification='l'):
     return sg.Column(contents, element_justification=justification)
 
 
-def get_menu(sg, menu_key, font_size, menu_def):
+def make_menu(sg, menu_key, font_size, menu_def):
     return sg.Menu(menu_def, tearoff=True, font=font_size, key=menu_key)
