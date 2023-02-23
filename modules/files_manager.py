@@ -26,6 +26,13 @@ def init_group_structure(os, path):
     return output_folder, versions_folder
 
 
+def init_version_structure(os, path):
+    if not os.path.exists(path):
+        os.mkdir(path)
+    images_folder, texts_folder = init_content_structure(os, path)
+    return images_folder, texts_folder
+
+
 def init_content_structure(os, path):
     images_folder = path + 'Images\\'
     texts_folder = path + 'Texts\\'
@@ -50,3 +57,9 @@ def get_versions(os, versions_path):
     for entry in folders:
         groups.append(os.path.basename(entry))
     return groups
+
+
+def push_files(shutil, source_folder, destination_folder):
+    shutil.rmtree(destination_folder)
+    shutil.copytree(source_folder, destination_folder)
+    return True

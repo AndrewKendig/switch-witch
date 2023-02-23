@@ -14,7 +14,7 @@ def change_theme(sg, theme):
 def get_main_window_object(sg, os, data_path, files_manager):
     menu_def = [
         ['&File', ['&Settings', 'E&xit']],
-        ['&Manage', ['&Groups', '&Files']],
+        ['&Manage', ['&Groups', '&Versions', '&Files']],
         ['&Help', ['There is no help']]
     ]
     menu = make_menu(sg, '-MENUBAR-', 'Corbel 10', menu_def)
@@ -45,9 +45,10 @@ def show_not_implemented(sg, webbrowser):
 
 def make_controls_section(sg, os, data_path, files_manager):
     options = files_manager.get_groups(os, data_path)
-    group_selector = [[sg.Text('Select Group:')], [sg.Combo(options, size=(24, 1), key="-GROUP-"), sg.Button('Select Group')]]
-    version_selector = [[sg.Text('Select Version:')], [sg.Combo([], size=(40, 1), key="-VERSION-")], [sg.Button('Switch to Version', size=(36, 1))]]
-    layout = [*group_selector, *version_selector]
+    group_selector = [[sg.Text('Select Group', font='_ 10 bold')], [sg.Text(' '), sg.Combo(options, size=(20, 1), key="-GROUP-"), sg.Button('Select Group')]]
+    version_selector = [[sg.Text('Select Version', font='_ 10 bold')], [sg.Text(' '), sg.Combo([], size=(34, 1), key="-VERSION-")], [sg.Text(' '), sg.Button('Switch to Version', size=(31, 1))]]
+    apply_button = [[sg.Button('Apply Changes', size=(36, 2), font="_ 14 bold")]]
+    layout = [*group_selector, *version_selector, *apply_button]
     return make_frame(sg, layout, 'Controls', (300, 200))
 
 
