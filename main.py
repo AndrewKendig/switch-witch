@@ -28,9 +28,12 @@ while True:
         groups_list = files_manager.get_groups(os, data_path)
         window.Element('-GROUP-').Update(values=groups_list)
     elif event == 'Versions':
-        versions.show_versions_window(sg, os, window_manager, files_manager, group_folder)
-        versions_list = files_manager.get_versions(os, group_folder)
-        window.Element('-VERSION-').Update(values=versions_list)
+        if os.path.exists(group_folder):
+            versions.show_versions_window(sg, os, window_manager, files_manager, group_folder)
+            versions_list = files_manager.get_versions(os, group_folder)
+            window.Element('-VERSION-').Update(values=versions_list)
+        else:
+            window_manager.show_not_implemented(sg, webbrowser)
     elif event == 'Files':
         window_manager.show_not_implemented(sg, webbrowser)
     elif event == 'Select Group' and values['-GROUP-'] != '':
