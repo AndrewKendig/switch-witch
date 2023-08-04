@@ -1,5 +1,8 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QMenuBar, QFileDialog
+import os
+
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QMenuBar, QFileDialog, QLabel, QComboBox, QPushButton
 from PyQt6.QtGui import QAction
 import parts.data_handler as dh
 
@@ -38,12 +41,61 @@ class MenuBar(QMenuBar):
         edit_menu.addAction(source_folder_action)
 
 
+class InformationPanel(QWidget):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        self.display_folder_label = None
+        self.source_folder_label = None
+
+        self.options_combobox = None
+
+        self.switch_button = None
+
+        self.init_ui()
+
+    def init_ui(self):
+        self.setFixedHeight(150)
+
+        # Create widgets for source and destination labels
+        self.display_folder_label = QLabel("Display Folder:")
+        self.source_folder_label = QLabel("Source Folder:")
+
+        # Create a drop-down (QComboBox) for options
+        self.options_combobox = QComboBox()
+
+        # Create a switch button
+        self.switch_button = QPushButton("Switch")
+
+        # Create the layout for the information panel
+        layout = QVBoxLayout()
+        layout.addWidget(self.display_folder_label)
+        layout.addWidget(self.source_folder_label)
+        layout.addWidget(self.options_combobox)
+        layout.addWidget(self.switch_button)
+        self.setLayout(layout)
+
+    def update_display_folder(self, display_folder):
+        self.display_folder_label.setText(f'Display Folder: {display_folder}')
+
+    def update_source_folder(self, source_folder):
+        self.source_folder_label.setText(f'Source Folder: {source_folder}')
+
+    def update_options(self, options):
+        self.options_combobox.clear()
+        for option in options:
+            pass
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
         self.data = None
+
+        self.information_panel = None
+        self.text_file_edit = None
+        self.image_file_edit = None
 
         self.init_ui()
         self.init_data()
@@ -62,6 +114,11 @@ class MainWindow(QMainWindow):
 
         # Create the left column widget
         left_column = QWidget(self)
+        left_column_layout = QVBoxLayout()
+        left_column_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        left_column.setLayout(left_column_layout)
+        self.information_panel = InformationPanel(self)
+        left_column_layout.addWidget(self.information_panel)
         main_layout.addWidget(left_column, 2)  # Weight 2 for 2:1 ratio
 
         # Create the right column widget
@@ -91,24 +148,33 @@ class MainWindow(QMainWindow):
     def open_project(self):
         self.prompt_settings_file()
         self.data.settings.load_from_file()
+        self.update_display()
 
     def prompt_display_folder(self):
         if self.data:
             folder_path = QFileDialog.getExistingDirectory(self, "Select Display Folder")
             if folder_path:
                 self.data.settings.set_display_folder(folder_path)
+                self.update_display()
 
     def prompt_source_folder(self):
         if self.data:
             folder_path = QFileDialog.getExistingDirectory(self, "Select Source Folder")
             if folder_path:
                 self.data.settings.set_source_folder(folder_path)
+                self.update_display()
 
     def prompt_settings_file(self):
         if self.data:
             file_path, _ = QFileDialog.getOpenFileName(self, "Open Switch Witch Project", "", "SWS Files (*.sws);;All Files (*)")
             if file_path:
                 self.data.settings.set_settings_file(file_path)
+
+    def update_display(self):
+        if self.data.settings.display_folder:
+            self.information_panel.update_display_folder(self.data.settings.display_folder)
+        if self.data.settings.source_folder:
+            self.information_panel.update_source_folder(self.data.settings.source_folder)
 
 
 if __name__ == "__main__":

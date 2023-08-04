@@ -47,7 +47,6 @@ class Settings:
         if self.settings_file:
             with open(self.settings_file, 'r') as file:
                 settings_json = file.read()
-                print(settings_json)
                 self.load_settings(settings_json)
 
     def set_display_folder(self, display_folder):
