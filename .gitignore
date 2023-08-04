@@ -1,4 +1,4 @@
-/settings.json
 /.idea/
-/modules/__pycache__/
+/parts/__pycache__/
 /Data/
+/venv/
