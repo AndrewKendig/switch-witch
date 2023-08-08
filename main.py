@@ -152,14 +152,14 @@ class MainWindow(QMainWindow):
     def load_version_button_pressed(self, index, value):
         path = os.path.join(self.data.settings.source_folder, self.data.settings.versions[index])
         self.images_panel.load_images(path)
-        try:
-            self.texts_panel.load_texts(path)
-        except Exception as e:
-            print(e)
+        self.texts_panel.load_texts(path)
 
     def save_changes_button_pressed(self, index, value):
         path = os.path.join(self.data.settings.source_folder, self.data.settings.versions[index])
         self.texts_panel.save_texts()
+        self.data.files.convert_images(os.path.join(path, 'Images'))
+        self.images_panel.load_images(path)
+        self.texts_panel.load_texts(path)
 
     def switch_button_pressed(self, index, value):
         source_path = os.path.join(self.data.settings.source_folder, self.data.settings.versions[index])

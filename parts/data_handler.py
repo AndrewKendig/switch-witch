@@ -1,6 +1,7 @@
 import os
 import json
 import shutil
+from PIL import Image
 
 
 class Data:
@@ -103,3 +104,20 @@ class Files:
 
     def set_convert_flag(self, convert_flag):
         self.convert_flag = convert_flag
+
+    def convert_images(self, path):
+        if self.convert_flag:
+            image_formats = [".jpg", ".jpeg", ".gif", ".bmp", ".webp"]  # Supported image formats
+            for item in os.listdir(path):
+                file_path = os.path.join(path, item)
+                if os.path.isfile(file_path) and os.path.splitext(item)[1].lower() in image_formats:
+                    image = Image.open(file_path)
+
+                    # Convert the image to PNG format
+                    if image.format != "PNG":
+                        output_path = os.path.join(path, os.path.splitext(item)[0] + ".png")
+                        image.save(output_path, format="PNG")
+
+                    image.close()
+                    os.remove(file_path)
+
