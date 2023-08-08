@@ -157,7 +157,7 @@ class ImagesPanel(QWidget):
     def init_ui(self):
         main_layout = QVBoxLayout()
 
-        self.convert_button = QPushButton("Convert All To PNG")
+        self.convert_button = QPushButton("Convert All")
         main_layout.addWidget(self.convert_button)
 
         self.images_box = ImagesBox()
@@ -201,7 +201,9 @@ class ImagesBox(QWidget):
         self.clear_images()
         images_path = os.path.join(path, 'Images')
         for item in os.listdir(images_path):
-            if os.path.isfile(os.path.join(images_path, item)):
+            image_formats = [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp"]
+            file_path = os.path.join(images_path, item)
+            if os.path.isfile(file_path) and os.path.splitext(file_path)[1].lower() in image_formats:
                 image_display = ImageDisplay(os.path.join(images_path, item))
                 self.layout.addWidget(image_display)
                 self.image_displays.append(image_display)
@@ -298,7 +300,8 @@ class TextsBox(QWidget):
         self.clear_texts()
         texts_path = os.path.join(path, 'Texts')
         for item in os.listdir(texts_path):
-            if os.path.isfile(os.path.join(texts_path, item)):
+            file_path = os.path.join(texts_path, item)
+            if os.path.isfile(file_path) and os.path.splitext(file_path)[1].lower() == '.txt':
                 text_display = TextEditDisplay(os.path.join(texts_path, item))
                 self.layout.addWidget(text_display)
                 self.text_displays.append(text_display)

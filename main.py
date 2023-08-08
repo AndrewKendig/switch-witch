@@ -9,7 +9,7 @@ import parts.data_handler as dh
 import parts.elements as elements
 
 
-version_number = '2.0'
+version_number = '2.1'
 
 
 class MenuBar(QMenuBar):
