@@ -50,6 +50,7 @@ class MainWindow(QMainWindow):
         self.data = None
 
         self.information_panel = None
+        self.images_panel = None
         self.text_file_edit = None
         self.image_file_edit = None
 
@@ -77,13 +78,20 @@ class MainWindow(QMainWindow):
         left_column_layout.addWidget(self.information_panel)
         main_layout.addWidget(left_column, 2)  # Weight 2 for 2:1 ratio
 
-        self.information_panel.load_click.connect(self.load_button_pressed)
-        self.information_panel.save_click.connect(self.save_button_pressed)
+        self.information_panel.load_click.connect(self.load_version_button_pressed)
+        self.information_panel.save_click.connect(self.save_changes_button_pressed)
         self.information_panel.switch_click.connect(self.switch_button_pressed)
 
         # Create the right column widget
         right_column = QWidget(self)
+        right_column_layout = QVBoxLayout()
+        right_column_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        right_column.setLayout(right_column_layout)
+        self.images_panel = elements.ImagesPanel(self)
+        right_column_layout.addWidget(self.images_panel)
         main_layout.addWidget(right_column, 1)  # Weight 1 for 2:1 ratio
+
+        self.images_panel.convert_click.connect(self.convert_button_pressed)
 
         # Create the menu bar
         menubar = MenuBar(self)
@@ -138,11 +146,11 @@ class MainWindow(QMainWindow):
         if self.data.settings.versions:
             self.information_panel.set_versions(self.data.settings.versions)
 
-    def load_button_pressed(self, index, value):
+    def load_version_button_pressed(self, index, value):
         path = os.path.join(self.data.settings.source_folder, self.data.settings.versions[index])
-        print(path)
+        self.images_panel.load_images(path)
 
-    def save_button_pressed(self, index, value):
+    def save_changes_button_pressed(self, index, value):
         path = os.path.join(self.data.settings.source_folder, self.data.settings.versions[index])
         print(path)
 
@@ -156,6 +164,10 @@ class MainWindow(QMainWindow):
             self.data.files.copy_all(images_source_path, images_destination_path)
         if os.path.isdir(texts_source_path):
             self.data.files.copy_all(texts_source_path, texts_destination_path)
+
+    def convert_button_pressed(self):
+        self.data.files.set_convert_flag(True)
+        self.images_panel.flag_convert()
 
 
 if __name__ == "__main__":

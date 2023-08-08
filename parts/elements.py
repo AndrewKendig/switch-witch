@@ -1,5 +1,8 @@
+import os
+
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QPushButton
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QPushButton, QScrollArea
 
 
 class InfoPanel(QWidget):
@@ -139,3 +142,109 @@ class VersionsBox(QWidget):
 
     def save_button_pressed(self):
         self.save_click.emit(self.save_active['index'], self.save_active['value'])
+
+
+class ImagesPanel(QWidget):
+    convert_click = pyqtSignal()
+
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        self.convert_button = None
+        self.images_box = None
+
+        self.init_ui()
+
+    def init_ui(self):
+        main_layout = QVBoxLayout()
+
+        self.convert_button = QPushButton("Convert All To PNG")
+        main_layout.addWidget(self.convert_button)
+
+        self.images_box = ImagesBox()
+        scroll_box = QScrollArea()
+        scroll_box.setWidgetResizable(True)
+        scroll_box.setWidget(self.images_box)
+        main_layout.addWidget(scroll_box)
+
+        self.convert_button.clicked.connect(self.convert_button_pressed)
+
+        self.setLayout(main_layout)
+
+    def load_images(self, path):
+        self.images_box.load_images(path)
+
+    def flag_convert(self):
+        self.images_box.flag_convert()
+
+    def convert_button_pressed(self):
+        self.convert_click.emit()
+
+
+class ImagesBox(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.layout = None
+
+        self.convert_flagged = False
+        self.image_displays = []
+
+        self.init_ui()
+
+    def init_ui(self):
+        self.layout = QVBoxLayout()
+        self.layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+
+        self.setLayout(self.layout)
+
+    def load_images(self, path):
+        self.clear_images()
+        images_path = os.path.join(path, 'Images')
+        for item in os.listdir(images_path):
+            if os.path.isfile(os.path.join(images_path, item)):
+                image_display = ImageDisplay(os.path.join(images_path, item))
+                self.layout.addWidget(image_display)
+                self.image_displays.append(image_display)
+
+    def clear_images(self):
+        while self.layout.count():
+            item = self.layout.takeAt(0)
+            widget = item.widget()
+            if widget:
+                widget.deleteLater()
+        self.image_displays = []
+        self.convert_flagged = False
+
+    def flag_convert(self):
+        if not self.convert_flagged:
+            for image in self.image_displays:
+                if not image.type.lower() == 'png':
+                    image.type_label.setText(image.type_label.text() + ' -> (png)')
+            self.convert_flagged = True
+
+
+class ImageDisplay(QWidget):
+    def __init__(self, path):
+        super().__init__()
+        self.path = path
+        extension = os.path.splitext(self.path)[1]
+        self.type = extension[1:]
+
+        self.type_label = None
+
+        self.init_ui()
+
+    def init_ui(self):
+        layout = QVBoxLayout()
+        if os.path.isfile(self.path):
+            self.type_label = QLabel(self.type)
+            layout.addWidget(self.type_label)
+
+            pixmap = QPixmap(self.path)
+            scaled_pixmap = pixmap.scaled(150, 200, Qt.AspectRatioMode.KeepAspectRatio)
+            image = QLabel()
+            image.setPixmap(scaled_pixmap)
+            layout.addWidget(image)
+
+            self.setLayout(layout)

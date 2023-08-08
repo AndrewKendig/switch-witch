@@ -81,9 +81,10 @@ class Settings:
                 if os.path.isdir(item_path):
                     self.versions.append(item)
 
+
 class Files:
     def __init__(self):
-        pass
+        self.convert_flag = False
 
     def copy_all(self, source_path, destination_path):
         if not os.path.exists(destination_path):
@@ -99,3 +100,6 @@ class Files:
                 item_source_path = os.path.join(source_path, item)
                 item_destination_path = os.path.join(destination_path, item)
                 shutil.copy(item_source_path, item_destination_path)
+
+    def set_convert_flag(self, convert_flag):
+        self.convert_flag = convert_flag
