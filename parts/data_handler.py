@@ -107,6 +107,7 @@ class Files:
 
     def convert_images(self, path):
         if self.convert_flag:
+            self.convert_flag = False
             image_formats = [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp"]  # Supported image formats
             for index, item in enumerate(os.listdir(path)):
                 file_path = os.path.join(path, item)
