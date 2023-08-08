@@ -2,7 +2,7 @@ import os
 
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QPixmap
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QPushButton, QScrollArea
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QPushButton, QScrollArea, QLineEdit
 
 
 class InfoPanel(QWidget):
@@ -247,4 +247,83 @@ class ImageDisplay(QWidget):
             image.setPixmap(scaled_pixmap)
             layout.addWidget(image)
 
-            self.setLayout(layout)
+        self.setLayout(layout)
+
+
+class TextsPanel(QWidget):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        self.texts_box = None
+
+        self.init_ui()
+
+    def init_ui(self):
+        main_layout = QVBoxLayout()
+
+        self.texts_box = TextsBox()
+        scroll_box = QScrollArea()
+        scroll_box.setWidgetResizable(True)
+        scroll_box.setWidget(self.texts_box)
+        main_layout.addWidget(scroll_box)
+
+        self.setLayout(main_layout)
+
+    def load_texts(self, path):
+        self.texts_box.load_texts(path)
+
+
+class TextsBox(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.layout = None
+        self.text_displays = []
+
+        self.init_ui()
+
+    def init_ui(self):
+        self.layout = QVBoxLayout()
+        self.layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+
+        self.setLayout(self.layout)
+
+    def load_texts(self, path):
+        self.clear_texts()
+        texts_path = os.path.join(path, 'Texts')
+        for item in os.listdir(texts_path):
+            if os.path.isfile(os.path.join(texts_path, item)):
+                text_display = TextEditDisplay(os.path.join(texts_path, item))
+                self.layout.addWidget(text_display)
+                self.text_displays.append(text_display)
+
+    def clear_texts(self):
+        while self.layout.count():
+            item = self.layout.takeAt(0)
+            widget = item.widget()
+            if widget:
+                widget.deleteLater()
+        self.text_displays = []
+
+
+class TextEditDisplay(QWidget):
+    def __init__(self, path):
+        super().__init__()
+
+        self.path = path
+
+        self.init_ui()
+
+    def init_ui(self):
+        layout = QHBoxLayout()
+        if os.path.isfile(self.path):
+            name = os.path.basename(self.path)
+            name_label = QLabel(name)
+            layout.addWidget(name_label)
+
+            editor = QLineEdit()
+            layout.addWidget(editor)
+            with open(self.path, 'r') as file:
+                editor.setText(file.read())
+
+        self.setLayout(layout)

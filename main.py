@@ -51,8 +51,7 @@ class MainWindow(QMainWindow):
 
         self.information_panel = None
         self.images_panel = None
-        self.text_file_edit = None
-        self.image_file_edit = None
+        self.texts_panel = None
 
         self.init_ui()
         self.init_data()
@@ -76,6 +75,10 @@ class MainWindow(QMainWindow):
         left_column.setLayout(left_column_layout)
         self.information_panel = elements.InfoPanel(self)
         left_column_layout.addWidget(self.information_panel)
+
+        self.texts_panel = elements.TextsPanel(self)
+        left_column_layout.addWidget(self.texts_panel)
+
         main_layout.addWidget(left_column, 2)  # Weight 2 for 2:1 ratio
 
         self.information_panel.load_click.connect(self.load_version_button_pressed)
@@ -149,6 +152,10 @@ class MainWindow(QMainWindow):
     def load_version_button_pressed(self, index, value):
         path = os.path.join(self.data.settings.source_folder, self.data.settings.versions[index])
         self.images_panel.load_images(path)
+        try:
+            self.texts_panel.load_texts(path)
+        except Exception as e:
+            print(e)
 
     def save_changes_button_pressed(self, index, value):
         path = os.path.join(self.data.settings.source_folder, self.data.settings.versions[index])
