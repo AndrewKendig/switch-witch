@@ -1,3 +1,4 @@
+import shutil
 import sys
 import os
 
@@ -5,6 +6,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QMenuBar, QFileDialog, QLabel, QComboBox, QPushButton
 from PyQt6.QtGui import QAction
 import parts.data_handler as dh
+import parts.elements as elements
 
 
 version_number = '2.0'
@@ -41,52 +43,6 @@ class MenuBar(QMenuBar):
         edit_menu.addAction(source_folder_action)
 
 
-class InformationPanel(QWidget):
-    def __init__(self, parent):
-        super().__init__(parent)
-
-        self.display_folder_label = None
-        self.source_folder_label = None
-
-        self.options_combobox = None
-
-        self.switch_button = None
-
-        self.init_ui()
-
-    def init_ui(self):
-        self.setFixedHeight(150)
-
-        # Create widgets for source and destination labels
-        self.display_folder_label = QLabel("Display Folder:")
-        self.source_folder_label = QLabel("Source Folder:")
-
-        # Create a drop-down (QComboBox) for options
-        self.options_combobox = QComboBox()
-
-        # Create a switch button
-        self.switch_button = QPushButton("Switch")
-
-        # Create the layout for the information panel
-        layout = QVBoxLayout()
-        layout.addWidget(self.display_folder_label)
-        layout.addWidget(self.source_folder_label)
-        layout.addWidget(self.options_combobox)
-        layout.addWidget(self.switch_button)
-        self.setLayout(layout)
-
-    def update_display_folder(self, display_folder):
-        self.display_folder_label.setText(f'Display Folder: {display_folder}')
-
-    def update_source_folder(self, source_folder):
-        self.source_folder_label.setText(f'Source Folder: {source_folder}')
-
-    def update_options(self, options):
-        self.options_combobox.clear()
-        for option in options:
-            pass
-
-
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -117,9 +73,13 @@ class MainWindow(QMainWindow):
         left_column_layout = QVBoxLayout()
         left_column_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         left_column.setLayout(left_column_layout)
-        self.information_panel = InformationPanel(self)
+        self.information_panel = elements.InfoPanel(self)
         left_column_layout.addWidget(self.information_panel)
         main_layout.addWidget(left_column, 2)  # Weight 2 for 2:1 ratio
+
+        self.information_panel.load_click.connect(self.load_button_pressed)
+        self.information_panel.save_click.connect(self.save_button_pressed)
+        self.information_panel.switch_click.connect(self.switch_button_pressed)
 
         # Create the right column widget
         right_column = QWidget(self)
@@ -172,9 +132,30 @@ class MainWindow(QMainWindow):
 
     def update_display(self):
         if self.data.settings.display_folder:
-            self.information_panel.update_display_folder(self.data.settings.display_folder)
+            self.information_panel.set_display_folder(self.data.settings.display_folder)
         if self.data.settings.source_folder:
-            self.information_panel.update_source_folder(self.data.settings.source_folder)
+            self.information_panel.set_source_folder(self.data.settings.source_folder)
+        if self.data.settings.versions:
+            self.information_panel.set_versions(self.data.settings.versions)
+
+    def load_button_pressed(self, index, value):
+        path = os.path.join(self.data.settings.source_folder, self.data.settings.versions[index])
+        print(path)
+
+    def save_button_pressed(self, index, value):
+        path = os.path.join(self.data.settings.source_folder, self.data.settings.versions[index])
+        print(path)
+
+    def switch_button_pressed(self, index, value):
+        source_path = os.path.join(self.data.settings.source_folder, self.data.settings.versions[index])
+        images_source_path = os.path.join(source_path, 'Images')
+        images_destination_path = os.path.join(self.data.settings.display_folder, 'Images')
+        texts_source_path = os.path.join(source_path, 'Texts')
+        texts_destination_path = os.path.join(self.data.settings.display_folder, 'Texts')
+        if os.path.isdir(images_source_path):
+            self.data.files.copy_all(images_source_path, images_destination_path)
+        if os.path.isdir(texts_source_path):
+            self.data.files.copy_all(texts_source_path, texts_destination_path)
 
 
 if __name__ == "__main__":
