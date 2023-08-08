@@ -2,7 +2,7 @@ import os
 
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QPixmap
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QPushButton, QScrollArea, QLineEdit
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QPushButton, QScrollArea, QLineEdit, QSpinBox
 
 
 class InfoPanel(QWidget):
@@ -72,7 +72,6 @@ class TextDisplay(QWidget):
         self.init_ui()
 
     def init_ui(self):
-
         layout = QHBoxLayout()
         layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
 
@@ -331,14 +330,27 @@ class TextEditDisplay(QWidget):
             name_label = QLabel(name)
             layout.addWidget(name_label)
 
-            self.editor = QLineEdit()
-            layout.addWidget(self.editor)
             with open(self.path, 'r') as file:
-                self.editor.setText(file.read())
+                text_value = file.read()
+
+            if text_value.isdigit():
+                self.is_number = True
+                self.editor = QSpinBox()
+                self.editor.setMaximum(999999999)
+                self.editor.setValue(int(text_value))
+
+            else:
+                self.editor = QLineEdit()
+                self.editor.setText(text_value)
+            layout.addWidget(self.editor)
 
         self.setLayout(layout)
 
     def save_changes(self):
         if os.path.isfile(self.path):
+            if self.is_number:
+                text_value = str(self.editor.value())
+            else:
+                text_value = self.editor.text()
             with open(self.path, 'w') as file:
-                file.write(self.editor.text())
+                file.write(text_value)
