@@ -269,6 +269,9 @@ class TextsPanel(QWidget):
 
         self.setLayout(main_layout)
 
+    def save_texts(self):
+        self.texts_box.save_texts()
+
     def load_texts(self, path):
         self.texts_box.load_texts(path)
 
@@ -287,6 +290,10 @@ class TextsBox(QWidget):
         self.layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         self.setLayout(self.layout)
+
+    def save_texts(self):
+        for item in self.text_displays:
+            item.save_changes()
 
     def load_texts(self, path):
         self.clear_texts()
@@ -311,6 +318,9 @@ class TextEditDisplay(QWidget):
         super().__init__()
 
         self.path = path
+        self.is_number = False
+
+        self.editor = None
 
         self.init_ui()
 
@@ -321,9 +331,14 @@ class TextEditDisplay(QWidget):
             name_label = QLabel(name)
             layout.addWidget(name_label)
 
-            editor = QLineEdit()
-            layout.addWidget(editor)
+            self.editor = QLineEdit()
+            layout.addWidget(self.editor)
             with open(self.path, 'r') as file:
-                editor.setText(file.read())
+                self.editor.setText(file.read())
 
         self.setLayout(layout)
+
+    def save_changes(self):
+        if os.path.isfile(self.path):
+            with open(self.path, 'w') as file:
+                file.write(self.editor.text())

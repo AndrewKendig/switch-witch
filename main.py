@@ -159,7 +159,7 @@ class MainWindow(QMainWindow):
 
     def save_changes_button_pressed(self, index, value):
         path = os.path.join(self.data.settings.source_folder, self.data.settings.versions[index])
-        print(path)
+        self.texts_panel.save_texts()
 
     def switch_button_pressed(self, index, value):
         source_path = os.path.join(self.data.settings.source_folder, self.data.settings.versions[index])
