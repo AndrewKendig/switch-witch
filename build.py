@@ -6,7 +6,7 @@ import zipfile
 from cx_Freeze import setup, Executable
 
 app_name = "Switch-Witch"
-app_version = "2.1"
+app_version = "2.1.1"
 app_description = "For Jolfwe"
 author_name = "AndrewKendig"
 author_email = "andrewtkendig@gmail.com"

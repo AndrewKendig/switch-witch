@@ -115,9 +115,10 @@ class Files:
                     image = Image.open(file_path)
 
                     # Convert the image to PNG format and change name
-                    output_path = os.path.join(path, "image-" + str(index) + ".png")
-                    image.save(output_path, format="PNG")
+                    if not os.path.join(path, "image-" + str(index) + ".png") == file_path:
+                        output_path = os.path.join(path, "image-" + str(index) + ".png")
+                        image.save(output_path, format="PNG")
+                        os.remove(file_path)
 
                     image.close()
-                    os.remove(file_path)
 
