@@ -21,10 +21,12 @@ class MenuBar(QMenuBar):
         file_menu = self.addMenu("File")
 
         save_action = QAction("Save", self)
+        save_action.setShortcut("Ctrl+S")
         save_action.triggered.connect(self.parent().save_project)
         file_menu.addAction(save_action)
 
         open_action = QAction("Open", self)
+        save_action.setShortcut("Ctrl+O")
         open_action.triggered.connect(self.parent().open_project)
         file_menu.addAction(open_action)
 
